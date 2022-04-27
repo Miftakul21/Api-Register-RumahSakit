@@ -61,8 +61,8 @@ class Jadwal
 	{
 		$jdwl = [];
 		$jdwl['id'] = $this->getId();
-		$jdwl['hari'] = $this->getHari();
-		$jdwl['kuota'] = $this->getKuota();
+		$jdwl['day'] = $this->getHari();
+		$jdwl['total'] = $this->getKuota();
 
 		return $jdwl;
 	}

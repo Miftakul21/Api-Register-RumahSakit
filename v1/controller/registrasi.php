@@ -205,7 +205,7 @@ if (array_key_exists('regist_id', $_GET)) {
 	      $response = new Response();
 	      $response->setHttpStatusCode(201);
 	      $response->setSuccess(true);
-	      $response->setMessages("Regist created");
+	      $response->setMessages("Register pasien created successfully");
 	      $response->setData($returnData);
 	      $response->send();
 	      exit;      
@@ -229,7 +229,7 @@ if (array_key_exists('regist_id', $_GET)) {
 	      $response->send();
 	      exit;
 	    }
-	} else if($server === 'GET') {
+	}/* else if($server === 'GET') {
 		try {
 			// $readDb = DB::connectReadDb();
 			global $writeDb;
@@ -282,7 +282,7 @@ if (array_key_exists('regist_id', $_GET)) {
 			$res->send();
 			exit;
 		}
-	} else {
+	}*/ else {
 		$res = new Response();
 		$res->setHttpStatusCode(405);
 		$res->setSuccess(false);

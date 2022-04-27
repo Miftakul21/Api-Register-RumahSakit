@@ -77,9 +77,9 @@ class Pasien
 	{
 		$pasien = [];
 		$pasien['id'] = $this->getId();
-		$pasien['nama'] = $this->getNama();
-		$pasien['jk'] = $this->getJk();
-		$pasien['no'] = $this->getHp();
+		$pasien['name'] = $this->getNama();
+		$pasien['gender'] = $this->getJk();
+		$pasien['phone'] = $this->getHp();
 
 		return $pasien;
 	}
