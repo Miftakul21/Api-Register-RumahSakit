@@ -1,0 +1,10 @@
+php_flag display_errors on
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule ^pasien/(.*)$ controller/pasien.php?pasien_id=$1 [L]
+RewriteRule ^jadwal/(.*)$ controller/jadwal.php?jadwal_id=$1 [L]
+RewriteRule ^jadwal$	  controller/jadwal.php 			 [L]
+RewriteRule ^regist$      controller/registrasi.php     	 [L]
