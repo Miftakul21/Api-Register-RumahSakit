@@ -22,73 +22,76 @@ try {
 }
 
 if (array_key_exists('regist_id', $_GET)) {
-	// $id = $_GET['regist_id'];
+	$id = $_GET['regist_id'];
 
-	// // VALIDASI ID HARUS BERUPA ANGKA
-	// if ($id == '' || !is_numeric($id)) {
-	// 	$res = new Response();
-	// 	$res->setHttpStatusCode(400);
-	// 	$res->setSuccess(false);
-	// 	$res->setMessages('ID Regist tidak boleh kosong atau harus berupa angka!');
-	// 	$res->send();
-	// 	exit;
-	// }
+	// VALIDASI ID HARUS BERUPA ANGKA
+	if ($id == '' || !is_numeric($id)) {
+		$res = new Response();
+		$res->setHttpStatusCode(400);
+		$res->setSuccess(false);
+		$res->setMessages('ID Regist tidak boleh kosong atau harus berupa angka!');
+		$res->send();
+		exit;
+	}
 
-	// if($_SERVER['REQUEST_METHOD'] === 'GET') {
-	// 	try {
-	// 		$query = $readDb->prepare('SELECT * FROM regist WHERE id_regist = :id ');
-	// 		$query->binndParam('id', $id, PDO::PARAM_INT);
-	// 		$query->execute();
+	if($_SERVER['REQUEST_METHOD'] === 'GET') {
+		try {
+			global $readDb;
+			$query = $readDb->prepare('SELECT * FROM regist WHERE id_regist = :id ');
+			$query->bindParam(':id', $id, PDO::PARAM_INT);
+			$query->execute();
 
-	// 		$row = $query->rowCount();
-	// 		if ($row === 0) {
-	// 			$res = new Response();
-	// 			$res->setHttpStatusCode(400);
-	// 			$res->setSuccess(false);
-	// 			$res->setMessages('ID Register tidak ditemukan!');
-	// 			$res->send();
-	// 			exit;
-	// 		}
+			$row = $query->rowCount();
+			if ($row === 0) {
+				$res = new Response();
+				$res->setHttpStatusCode(400);
+				$res->setSuccess(false);
+				$res->setMessages('ID Register tidak ditemukan!');
+				$res->send();
+				exit;
+			}
 
-	// 		$RegisterArray = null;
-	// 		while($v = $query->fetch(PDO::FETCH_ASSOC)) {
-	// 			$register = new Registrasi($v['id_regist'], $v['no_regist'], $v['id_pasien'], $v['tanggal'], $v['current_at']);
-	// 			$registerArray = $register->returnRegistrasiAsArray();
-	// 		} 
+			$RegisterArray = null;
+			while($v = $query->fetch(PDO::FETCH_ASSOC)) {
+				$register = new Registrasi($v['id_regist'], $v['no_regist'], $v['id_pasien'], $v['tanggal'], $v['created_at']);
+				$RegisterArray = $register->returnRegistrasiAsArray();
+			} 
 
-	// 		$returnData = [];
-	// 		$returnData['row_returned'] = $row;
-	// 		$returnData['data'] = $jadwalArray;
+			$returnData = [];
+			$returnData['row_returned'] = $row;
+			$returnData['data'] = $jadwalArray;
 
-	// 		$res = new Response();
-	// 		$res->setHttpStatusCode(200);	
-	// 		$res->setSuccess(true);
-	// 		$res->toCache(true);
-	// 		$res->setData($returnData);
-	// 		$res->send();
-	// 		exit;			
-	// 	} catch (PDOException $e) {
-	// 		// Perlu direkam ke error_log, karena kesalahan dari backend yang tidak diketahui
-	// 		error_log($e->getMessage());
-	// 		$res = new Response();
-	// 		$res->setHttpStatusCode(500);
-	// 		$res->setSuccess(false);
-	// 		$res->setMessages('Failed to get data register!');
-	// 		$res->send();
-	// 		exit;
-	// 	} catch (RegistException $e) {
-	// 		// Tidak perlu direkam ke error_log, karena pure kesalahan dr user
-	// 		$res = new Response();
-	// 		$res->setHttpStatusCode(400);
-	// 		$res->setSuccess(false);
-	// 		$res->setMessages($e->getMessage());
-	// 		$res->send();
-	// 		exit;
-	// 	}
-	// }
+			$res = new Response();
+			$res->setHttpStatusCode(200);	
+			$res->setSuccess(true);
+			$res->toCache(true);
+			$res->setData($returnData);
+			$res->send();
+			exit;			
+		} catch (PDOException $e) {
+			// Perlu direkam ke error_log, karena kesalahan dari backend yang tidak diketahui
+			error_log($e->getMessage());
+			$res = new Response();
+			$res->setHttpStatusCode(500);
+			$res->setSuccess(false);
+			$res->setMessages('Failed to get data register!');
+			$res->send();
+			exit;
+		} catch (RegistException $e) {
+			// Tidak perlu direkam ke error_log, karena pure kesalahan dr user
+			$res = new Response();
+			$res->setHttpStatusCode(400);
+			$res->setSuccess(false);
+			$res->setMessages($e->getMessage()." hahaha >_< ".$e);
+			$res->send();
+			exit;
+		}
+	}
+	
 	
 } else if (empty($_GET)) {
-	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+	$server = $_SERVER['REQUEST_METHOD'];
+	if ($server === 'POST') {
 		// create regist
 		try {
 	      // cek content type header apakah JSON
@@ -125,25 +128,6 @@ if (array_key_exists('regist_id', $_GET)) {
 	        exit;
 	     }
 
-
-		/*
-		//   Seharusnya masuk di request GET
-		  $date = date('Y-m-d');
-		  $query = $readDb->prepare('SELECT * FROM regist WHERE tanggal = :tanggal AND id_pasien = :pasien_id');
-		  $query->bindParam(':tanggal', $date, PDO::PARAM_STR);		
-		  $query->bindParam(':pasien_id', $jsonData->pasien_id, PDO::PARAM_STR);
-		  $query->execute();
-
-		  $cek = $query->rowCount();
-		  if($cek > 0) {
-	        $response = new Response();
-	        $response->setHttpStatusCode(200);
-	        $response->setSuccess(true);
-	        $response->setMessages("Pasien terdaftar pada tanggal ".date('Y/m/d'));
-	        $response->send();
-	        exit;
-		  }
-		*/
 	      
 	      $newRegistrasi = new Registrasi(null, 'REG-'.rand(211111, 999999), $jsonData->pasien_id, date('Y-m-d'), date('Y-m-d H:i:s'));
 	      $noregist = $newRegistrasi->getNoreg();
@@ -245,6 +229,59 @@ if (array_key_exists('regist_id', $_GET)) {
 	      $response->send();
 	      exit;
 	    }
+	} else if($server === 'GET') {
+		try {
+			// $readDb = DB::connectReadDb();
+			global $writeDb;
+			$query = $writeDb->prepare("SELECT * FROM regist");
+			$query->execute();
+
+			$row = $query->rowCount();
+
+			if ($row === 0) {
+				$res = new Response();
+				$res->setHttpStatusCode(400);
+				$res->setSuccess(false);
+				$res->setMessages('Data register pasien tidak ditemukan!');
+				$res->send();
+				exit;
+			}
+
+			$RegisterArray = null;
+			while ($v = $query->fetch(PDO::FETCH_ASSOC)) {
+				$register = new Registrasi($v['id_regist'], $v['no_regist'], $v['id_pasien'], $v['tanggal'], $v['created_at']);
+				$RegisterArray[] = $register->returnRegistrasiAsArray();
+			}
+
+			$returnData = [];
+			$returnData['row_returned'] = $row;
+			$returnData['data'] = $RegisterArray;
+
+			$res = new Response();
+			$res->setHttpStatusCode(200);
+			$res->setSuccess(true);
+			$res->toCache(true);
+			$res->setData($returnData);
+			$res->send();
+			exit;
+		} catch (PDOException $e) {
+			// Perlu direkam ke error_log, karena kesalahan dari backend yang tidak diketahui
+			error_log($e->getMessage());
+			$res = new Response();
+			$res->setHttpStatusCode(500);
+			$res->setSuccess(false);
+			$res->setMessages('Failed to get jadwal!');
+			$res->send();
+			exit;
+		} catch (RegistException $e) {
+			// Tidak perlu direkam ke error_log, karena pure kesalahan dr user
+			$res = new Response();
+			$res->setHttpStatusCode(404);
+			$res->setSuccess(false);
+			$res->setMessages("OI OI Majikayo ".$e);
+			$res->send();
+			exit;
+		}
 	} else {
 		$res = new Response();
 		$res->setHttpStatusCode(405);
